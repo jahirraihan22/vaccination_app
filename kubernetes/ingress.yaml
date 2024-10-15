@@ -1,0 +1,28 @@
+apiVersion: v1
+items:
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/rewrite-target: /
+      name: vaccination-ingress
+      namespace: vaccination-app
+    spec:
+      ingressClassName: nginx
+      rules:
+        - host: vaccination.local
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: app-service
+                    port:
+                      number: 80
+                path: /
+                pathType: Prefix
+    status:
+      loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""

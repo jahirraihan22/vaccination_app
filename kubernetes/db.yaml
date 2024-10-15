@@ -1,4 +1,14 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: vaccination-app
+data:
+  MYSQL_DATABASE: "vaccination_db"
+
+---
+
+apiVersion: v1
 kind: Secret
 metadata:
   name: mysql-secret
@@ -6,6 +16,34 @@ metadata:
 type: Opaque
 data:
   MYSQL_ROOT_PASSWORD: cm9vdA==  # base64 encoded value of 'root'
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  namespace: vaccination-app
+spec:
+  capacity:
+    storage: 1Gi  # Adjust the size as needed
+  accessModes:
+    - ReadWriteOnce
+  hostPath:  # This is just an example; for production, use a proper storage solution
+    path: /mnt/dbdata/mysql  # Adjust the path according to your setup
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: vaccination-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi  # Must match the PV storage capacity
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -30,6 +68,8 @@ spec:
           envFrom:
             - secretRef:
                 name: mysql-secret
+            - configMapRef:
+                name: mysql-config
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql

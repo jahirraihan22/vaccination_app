@@ -27,6 +27,7 @@ here are the changes and steps that I need to be taken:
 * Add environment variables for the SMS provider credentials in the .env.
 * Just like the **VaccinationReminder** email class, I have to create a new class for SMS notifications.
 * Then I can easily add this into que service to send notification uninterruptedly.
+* Also, I have deployed it in kubernetes, you will find those manifests files in **Kubernetes** directory.
 
 ## CI/CD
 For demonstrating simple CI/CD I have used the GitHub action workflow, It basically builds the docker image and push docker hub.

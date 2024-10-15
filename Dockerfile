@@ -26,7 +26,7 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Copy composer files and install dependencies first to leverage Docker cache
-COPY composer.json composer.lock /var/www/html/
+COPY composer.json /var/www/html/
 
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
