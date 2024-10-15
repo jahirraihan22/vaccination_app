@@ -1,0 +1,93 @@
+version: "3"
+services:
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "jahirraihan22/vaccination-app"
+    container_name: app
+
+    restart: unless-stopped
+    tty: true
+    environment:
+      APP_DEBUG: true
+      APP_TIMEZONE: 'Asia/Dhaka' # to syncing with BD standard time
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: vaccination_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      MAIL_MAILER: smtp
+      MAIL_HOST: "sandbox.smtp.mailtrap.io"
+      MAIL_PORT: 2525
+      MAIL_USERNAME: "user name"
+      MAIL_PASSWORD: "password"
+      MAIL_ENCRYPTION: tls
+      MAIL_FROM_ADDRESS: "hello@vaccination.com"
+      MAIL_FROM_NAME: "${APP_NAME}"
+      QUEUE_CONNECTION: "database"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "81:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  #MySQL Service
+  db:
+    image: mysql:latest
+    container_name: db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: vaccination_db
+      MYSQL_ROOT_PASSWORD: "root"
+#      MYSQL_USER: "root"
+#      MYSQL_PASS: "root"
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+      PHP_UPLOAD_MAX_FILESIZE: 100MB
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
