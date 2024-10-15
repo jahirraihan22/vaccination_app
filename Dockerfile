@@ -40,12 +40,10 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Add user for laravel application
 RUN groupadd -g 1000 www && useradd -u 1000 -ms /bin/bash -g www www
 
-# Change current user to www
 USER www
 
 
 # Expose the port php-fpm runs on
 EXPOSE 9000
-
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 

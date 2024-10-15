@@ -1,0 +1,75 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: vaccination-app
+data:
+  APP_DEBUG: "true"
+  APP_TIMEZONE: "Asia/Dhaka"
+  DB_CONNECTION: "mysql"
+  DB_HOST: "mysql"
+  DB_PORT: "3306"
+  DB_DATABASE: "vaccination_db"
+  MAIL_MAILER: "smtp"
+  MAIL_HOST: "sandbox.smtp.mailtrap.io"
+  MAIL_PORT: "2525"
+  MAIL_ENCRYPTION: "tls"
+  MAIL_FROM_ADDRESS: "hello@vaccination.com"
+  MAIL_FROM_NAME: "${APP_NAME}"
+  QUEUE_CONNECTION: "database"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: vaccination-app
+type: Opaque
+data:
+  MAIL_USERNAME:
+  MAIL_PASSWORD:
+  DB_USERNAME:
+  DB_PASSWORD:
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: vaccination-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaccination-app
+  template:
+    metadata:
+      labels:
+        app: vaccination-app
+    spec:
+      containers:
+        - name: app
+          image: docker.io/jahirraihan/vaccination-app:2addd0cbe64bb0ab761ce6ebe2cee3788a3f5caa
+          ports:
+            - containerPort: 9000
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: vaccination-app
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 9000
+      targetPort: 9000
+  selector:
+    app: vaccination-app

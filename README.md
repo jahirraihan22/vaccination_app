@@ -28,4 +28,7 @@ here are the changes and steps that I need to be taken:
 * Just like the **VaccinationReminder** email class, I have to create a new class for SMS notifications.
 * Then I can easily add this into que service to send notification uninterruptedly.
 
+## CI/CD
+For demonstrating simple CI/CD I have used the GitHub action workflow, It basically builds the docker image and push docker hub.
+
 **Note:** To work mail server properly please provide the actual credentials
