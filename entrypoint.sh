@@ -2,6 +2,8 @@
 
 
 
+php artisan schedule:run
+sleep 2
 
 php artisan schedule:work &
 
