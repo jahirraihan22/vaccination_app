@@ -1,11 +1,24 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vaccine-ingress-cm
+  namespace: vaccination-app
+data:
+  SCRIPT_FILENAME: "/var/www/html/public/index.php"
+
+---
+
+apiVersion: v1
 items:
   - apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
       annotations:
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/rewrite-target: /
+#        kubernetes.io/ingress.class: nginx
+#        nginx.ingress.kubernetes.io/rewrite-target: /
+        nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+        nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+        nginx.ingress.kubernetes.io/fastcgi-params-configmap: "vaccine-ingress-cm"
       name: vaccination-ingress
       namespace: vaccination-app
     spec:

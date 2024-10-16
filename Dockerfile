@@ -26,9 +26,9 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Copy composer files and install dependencies first to leverage Docker cache
-COPY composer.json /var/www/html/
+COPY composer.json composer.lock /var/www/html/
 
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --ignore-platform-reqs --optimize-autoloader --no-scripts
 
 # Copy application files after dependencies are installed
 COPY . /var/www/html
@@ -40,10 +40,12 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Add user for laravel application
 RUN groupadd -g 1000 www && useradd -u 1000 -ms /bin/bash -g www www
 
+RUN chown -R www:www /var/www/html
+
 USER www
 
 
 # Expose the port php-fpm runs on
 EXPOSE 9000
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["sh","-c","/usr/local/bin/entrypoint.sh"]
 

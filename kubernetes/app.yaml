@@ -18,6 +18,8 @@ data:
   MAIL_FROM_ADDRESS: "hello@vaccination.com"
   MAIL_FROM_NAME: "${APP_NAME}"
   QUEUE_CONNECTION: "database"
+  SCRIPT_FILENAME: "/var/www/html/public/index.php"
+
 
 ---
 apiVersion: v1
@@ -31,6 +33,7 @@ data:
   MAIL_PASSWORD:
   DB_USERNAME: root
   DB_PASSWORD: root
+  APP_KEY: YmFzZTY0Om5Pd3pDNkNTeEZpa3U3WWRqZkhYTktjZWo2SkFmYkJkVXZRLzN0Y0ZmL289
 ---
 
 apiVersion: apps/v1
